@@ -1,12 +1,12 @@
 <?xml version='1.0'?>
 <sdf version='1.6'>
-	<model name="ground_plane_grass">
+	<model name="ground_grass">
 		<static>true</static>
-		<link name='ground_plane_grass'>
+		<link name='ground_grass'>
 			<collision name='collision'>
 				<geometry>
 					<mesh>
-						<uri>model://ground_plane_grass/ground_plane_grass.dae</uri>
+						<uri>model://ground_grass/ground_grass.dae</uri>
 					</mesh>
 				</geometry>
 				<surface>
@@ -23,7 +23,7 @@
 				<cast_shadows>false</cast_shadows>
 				<geometry>
 					<mesh>
-						<uri>model://ground_plane_grass/ground_plane_grass.dae</uri>
+						<uri>model://ground_grass/ground_grass.dae</uri>
 					</mesh>
 				</geometry>
 			</visual>

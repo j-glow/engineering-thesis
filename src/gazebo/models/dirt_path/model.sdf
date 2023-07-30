@@ -6,7 +6,7 @@
 		<collision name='collision'>
 			<geometry>
 				<mesh>
-					<uri>model://dirt_path/dirt_path.dae</uri>
+					<uri>model://dirt_path_curves/dirt_path_curves.dae</uri>
 				</mesh>
 			</geometry>
 		</collision>
@@ -15,7 +15,7 @@
 			<cast_shadows>false</cast_shadows>
 			<geometry>
 				<mesh>
-					<uri>model://dirt_path/dirt_path.dae</uri>
+					<uri>model://dirt_path_curves/dirt_path_curves.dae</uri>
 				</mesh>
 			</geometry>
 		</visual>

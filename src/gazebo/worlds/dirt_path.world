@@ -1,18 +1,51 @@
-<?xml version="1.0" ?>
+<?xml version="1.0"?>
 <sdf version="1.5">
-  <world name="default">
-    <!-- A global light source -->
-    <include>
-      <uri>model://sun</uri>
-    </include>
-    <!-- A ground plane -->
-    <include>
-      <uri>model://ground_plane_grass</uri>
-    </include>
-    <!-- A dirt path -->
-    <include>
-      <uri>model://dirt_path</uri>
-	 <pose>0.0 0.0 0.01 0.0 0.0 0.0</pose>	<!-- Avoid z-fighting with ground plane -->
-    </include>
-  </world>
+	<world name="default">
+		<physics name="fast" type="ignored">
+			<max_step_size>0.001</max_step_size>
+			<real_time_factor>0</real_time_factor>
+		</physics>
+		<plugin
+			filename="ignition-gazebo-physics-system"
+			name="ignition::gazebo::systems::Physics">
+		</plugin>
+		<plugin
+			filename="ignition-gazebo-user-commands-system"
+			name="ignition::gazebo::systems::UserCommands">
+		</plugin>
+		<plugin
+			filename="ignition-gazebo-scene-broadcaster-system"
+			name="ignition::gazebo::systems::SceneBroadcaster">
+		</plugin>
+		<plugin
+			filename="ignition-gazebo-contact-system"
+			name="ignition::gazebo::systems::Contact">
+		</plugin>
+
+		<!-- Animated sky with clouds -->
+		<scene>
+			<shadows>false</shadows>
+			<sky>
+				<clouds>
+					<speed>12</speed>
+				</clouds>
+			</sky>
+		</scene>
+
+		<!-- A global light source -->
+		<include>
+			<uri>model://sun</uri>
+		</include>
+
+		<!-- A ground plane -->
+		<include>
+			<uri>model://ground_grass</uri>
+		</include>
+
+		<!-- A dirt path -->
+		<include>
+			<uri>model://dirt_path</uri>
+			<pose>0.0 0.0 0.001 0.0 0.0 0.0</pose>	<!-- Avoid z-fighting with ground plane -->
+		</include>
+	</world>
 </sdf>
