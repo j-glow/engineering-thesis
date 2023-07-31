@@ -1335,5 +1335,8 @@
         <kinematic>0</kinematic>
       </link>
     </model>
+    <include>
+      <uri>model://jetbot</uri>
+    </include>
   </world>
 </sdf>

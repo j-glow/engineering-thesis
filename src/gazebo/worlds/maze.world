@@ -21,17 +21,21 @@
       filename="ignition-gazebo-contact-system"
       name="ignition::gazebo::systems::Contact">
     </plugin>
+    <plugin
+      filename="ignition-gazebo-sensors-system"
+      name="ignition::gazebo::systems::Sensors">
+    </plugin>
 
-		<!-- A global light source -->
-		<include>
-			<uri>model://sun</uri>
-		</include>
-		
+    <!-- A global light source -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
     <!-- A ground plane -->
     <include>
-			<uri>model://ground_plane</uri>
-		</include>
-		
+      <uri>model://ground_plane</uri>
+    </include>
+
     <include>
       <uri>model://maze</uri>
     </include>
@@ -40,6 +44,6 @@
       <uri>model://jetbot</uri>
       <pose>0 0 0 0 0 0</pose>
     </include>
-    
+
   </world>
 </sdf>
