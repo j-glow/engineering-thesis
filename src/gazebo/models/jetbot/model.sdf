@@ -156,5 +156,43 @@
 				<xyz>0.1 0.0 0.0</xyz>
 			</axis>
 		</joint>
+
+		<link name="lidar_link">
+			<gravity>false</gravity>
+			<pose>0 0 0.12 0 0 0</pose>
+			<visual name="visual">
+				<geometry>
+					<cylinder>
+						<radius>0.025</radius>
+						<length>0.015</length>
+					</cylinder>
+				</geometry>
+			</visual>
+			<sensor name="gpu_lidar" type="gpu_lidar">
+				<topic>lidar</topic>
+				<update_rate>10</update_rate>
+				<lidar>
+					<scan>
+						<horizontal>
+							<samples>640</samples>
+							<resolution>1</resolution>
+							<min_angle>0</min_angle>
+							<max_angle>6.28</max_angle>
+						</horizontal>
+					</scan>
+					<range>
+						<min>0.15</min>
+						<max>12</max>
+					</range>
+				</lidar>
+				<always_on>1</always_on>
+				<visualize>true</visualize>
+			</sensor>
+		</link>
+		<joint name="lidar_joint" type="fixed">
+			<parent>chassis</parent>
+			<child>lidar_link</child>
+			<pose>0 0 0 0 0 0</pose>
+		</joint>
 	</model>
 </sdf>
