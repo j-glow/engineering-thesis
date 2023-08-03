@@ -96,7 +96,7 @@
 			</visual>
 		</link>
 
-		<joint type="revolute" name="left_wheel_hinge">
+		<joint type="revolute" name="left_wheel_joint">
 			<pose>0 0 0 0 0 0</pose>
 			<child>left_wheel</child>
 			<parent>chassis</parent>
@@ -105,7 +105,7 @@
 			</axis>
 		</joint>
 
-		<joint type="revolute" name="right_wheel_hinge">
+		<joint type="revolute" name="right_wheel_joint">
 			<pose>0 0 0 0 0 0</pose>
 			<child>right_wheel</child>
 			<parent>chassis</parent>
@@ -194,5 +194,15 @@
 			<child>lidar_link</child>
 			<pose>0 0 0 0 0 0</pose>
 		</joint>
+		<plugin
+			filename="libignition-gazebo-diff-drive-system.so"
+			name="ignition::gazebo::systems::DiffDrive">
+			<left_joint>left_wheel_joint</left_joint>
+			<right_joint>right_wheel_joint</right_joint>
+			<wheel_separation>0.11075</wheel_separation>
+			<wheel_radius>0.07</wheel_radius>
+			<odom_publish_frequency>1</odom_publish_frequency>
+			<topic>cmd_vel</topic>
+		</plugin>
 	</model>
 </sdf>
