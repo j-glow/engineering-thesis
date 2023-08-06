@@ -14,7 +14,7 @@ from launch_ros.actions import Node
 def generate_launch_description():
     # Include the robot_state_publisher launch file, provided by our own package. Force sim time to be enabled
 
-    package_name='robot'
+    package_name='jetbot_ros'
 
     rsp = IncludeLaunchDescription(
                 PythonLaunchDescriptionSource([os.path.join(
