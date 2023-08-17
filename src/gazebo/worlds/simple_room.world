@@ -399,28 +399,6 @@
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
-      <model name='my_bot'>
-        <pose>2.02813 3.02789 0.033 0 -2.8e-05 0.007316</pose>
-        <scale>1 1 1</scale>
-        <link name='base_link'>
-          <pose>2.02813 3.02789 0.033 0 -2.8e-05 0.007316</pose>
-          <velocity>-0.000544 1e-05 -1.3e-05 0.000268 -0.03478 3.5e-05</velocity>
-          <acceleration>-1.06405 -0.007197 -4.76269 0.108076 1.30429 -0.002855</acceleration>
-          <wrench>-0.649072 -0.00439 -2.90524 0 -0 0</wrench>
-        </link>
-        <link name='left_wheel'>
-          <pose>2.02705 3.17638 0.033 -1.5708 0.423609 0.007313</pose>
-          <velocity>-0.000738 3e-06 1e-05 -6.8e-05 -0.022616 3.5e-05</velocity>
-          <acceleration>0.033522 -0.002334 -3.53946 0.082171 0.374011 -0.02082</acceleration>
-          <wrench>0.001676 -0.000117 -0.176973 0 -0 0</wrench>
-        </link>
-        <link name='right_wheel'>
-          <pose>2.02922 2.87939 0.033 1.5708 0.466287 0.007316</pose>
-          <velocity>-0.000729 3e-06 1e-05 -7.5e-05 -0.022349 -1.3e-05</velocity>
-          <acceleration>0.030437 -0.00218 -3.53798 0.076338 0.31816 -0.161363</acceleration>
-          <wrench>0.001522 -0.000109 -0.176899 0 -0 0</wrench>
-        </link>
-      </model>
       <model name='room'>
         <pose>-0.233164 1.00587 0 0 -0 0</pose>
         <scale>1 1 1</scale>
