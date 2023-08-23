@@ -3,19 +3,19 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription,DeclareLaunchArgument
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import PathJoinSubstitution, LaunchConfiguration
 
 from launch_ros.actions import Node
 
 
-
 def generate_launch_description():
     package_dir = get_package_share_directory("jetbot_ros")
     gazebo_params_file = os.path.join(package_dir, "config", "gazebo_params.yaml")
+    twist_mux_params_file = os.path.join(package_dir, "config", "twist_mux.yaml")
     gazebo_dir = get_package_share_directory("gazebo")
-    world = LaunchConfiguration('world')
+    world = LaunchConfiguration("world")
 
     world_launch_arg = DeclareLaunchArgument(
         "world",
@@ -68,6 +68,13 @@ def generate_launch_description():
         output="screen",
     )
 
+    # twist_mux = Node(
+    #     package="twist_mux",
+    #     executable="twist_mux",
+    #     parameters=[twist_mux_params_file],
+    #     output="screen"
+    # )
+
     return LaunchDescription(
         [
             world_launch_arg,
@@ -75,5 +82,6 @@ def generate_launch_description():
             gzserver,
             gzclient,
             spawn_entity,
+            # twist_mux,
         ]
     )
