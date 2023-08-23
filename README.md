@@ -3,7 +3,16 @@ ROS 2 based mobile robot navigation system for pedestrain following.
 
 ##  Dependencies 
 ```bash
-sudo apt install ros-humble-desktop python3-colcon-common-extensions gazebo ros-humble-xacro ros-humble-gazebo-ros-pkgs ros-humble-slam-toolbox ros-humble-navigation2 ros-humble-nav2-bringup ros-humble-twist-mux
+sudo apt install \
+    ros-humble-desktop \
+    python3-colcon-common-extensions \
+    gazebo \
+    ros-humble-xacro \
+    ros-humble-gazebo-ros-pkgs \
+    ros-humble-slam-toolbox \
+    ros-humble-navigation2 \
+    ros-humble-nav2-bringup \
+    ros-humble-twist-mux
 ```
 
 ## Installl Gazebo custom models
@@ -39,6 +48,12 @@ ros2 launch jetbot_ros simulation.launch.py
 Optionally append command with optional world argument using "world:={world_name}" syntax providing name of world from src/gazebo/worlds folder, eg.:
 ```bash
 ros2 launch jetbot_ros simulation.launch.py world:=custom.world
+ros2 launch jetbot_ros simulation.launch.py world:=simple_room.world
+```
+
+# Hand-steering the robot
+```bash
+ros2 run teleop_twist_keyboard teleop_twist_keyboard cmd_vel:=cmd_vel_teleop
 ```
 
 # RViz2 configs
@@ -65,3 +80,4 @@ rviz2 -d src/jetbot_ros/slam_viz.rviz
  - https://github.com/joshnewans/articubot_one
  - https://classic.gazebosim.org/tutorials
  - https://docs.ros.org/en/humble/
+ - https://navigation.ros.org/
