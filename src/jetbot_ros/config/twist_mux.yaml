@@ -7,5 +7,5 @@ twist_mux:
         priority: 10
       keyboard:
         topic: /key_vel
-        timeout: 0.2
+        timeout: 2
         priority: 50

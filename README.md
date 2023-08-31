@@ -51,9 +51,14 @@ ros2 launch jetbot_ros simulation.launch.py world:=custom.world
 ros2 launch jetbot_ros simulation.launch.py world:=simple_room.world
 ```
 
+Simulation with navigation stack launch:
+```bash
+ros2 launch jetbot_ros sim_with_nav.launch.py
+```
+
 # Hand-steering the robot
 ```bash
-ros2 run teleop_twist_keyboard teleop_twist_keyboard cmd_vel:=cmd_vel_teleop
+ros2 run teleop_twist_keyboard teleop_twist_keyboard -ros-args --remap cmd_vel:=key_vel
 ```
 
 # RViz2 configs
@@ -72,6 +77,30 @@ rviz2 -d src/jetbot_ros/robot_odom.rviz
 Visualize slam (needs [Simulation](#launches)):
 ```bash
 rviz2 -d src/jetbot_ros/slam_viz.rviz
+```
+
+Visualize navigation stack (needs [Simulation with navigation stack](#launches)):
+```bash
+rviz2 -d src/jetbot_ros/nav_viz.rviz
+```
+
+# WIP
+
+Teleop_twist_keyboard:
+```bash
+ros2 run teleop_twist_keyboard teleop_twist_keyboard cmd_vel:=key_vel
+```
+Simulation:
+```bash
+ros2 launch jetbot_ros simulation.launch.py world:=simple_room.world
+```
+Slam_toolbox:
+```bash
+ros2 launch slam_toolbox online_async_launch.py params_file:=./src/jetbot_ros/config/mapper_params_online_async.yaml use_sim_time:=true
+```
+Nav2:
+```bash
+ros2 launch nav2_bringup navigation.launch.py use_sim_time:=true
 ```
 
 # External sources used/inspired by:
