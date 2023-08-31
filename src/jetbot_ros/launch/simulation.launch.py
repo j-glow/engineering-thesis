@@ -14,7 +14,7 @@ def generate_launch_description():
     package_dir = get_package_share_directory("jetbot_ros")
     gazebo_params_file = os.path.join(package_dir, "config", "gazebo_params.yaml")
     twist_mux_params_file = os.path.join(package_dir, "config", "twist_mux.yaml")
-    gazebo_dir = get_package_share_directory("gazebo")
+    gazebo_dir = get_package_share_directory("gazebo_util")
     world = LaunchConfiguration("world")
 
     world_launch_arg = DeclareLaunchArgument(
@@ -43,7 +43,7 @@ def generate_launch_description():
         ),
         launch_arguments={
             "extra_gazebo_args": "--ros-args --params-file " + gazebo_params_file,
-            "world": PathJoinSubstitution([gazebo_dir, world]),
+            "world": PathJoinSubstitution([gazebo_dir, "worlds", world]),
         }.items(),
     )
 
@@ -68,12 +68,13 @@ def generate_launch_description():
         output="screen",
     )
 
-    # twist_mux = Node(
-    #     package="twist_mux",
-    #     executable="twist_mux",
-    #     parameters=[twist_mux_params_file],
-    #     output="screen"
-    # )
+    twist_mux = Node(
+        package="twist_mux",
+        executable="twist_mux",
+        parameters=[twist_mux_params_file],
+        remappings=[('/cmd_vel_out', '/cmd_vel')],
+        output="screen"
+    )
 
     return LaunchDescription(
         [
@@ -82,6 +83,6 @@ def generate_launch_description():
             gzserver,
             gzclient,
             spawn_entity,
-            # twist_mux,
+            twist_mux,
         ]
     )
