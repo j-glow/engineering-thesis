@@ -26,7 +26,7 @@ def generate_launch_description():
     )
     declare_use_sim_time_cmd = DeclareLaunchArgument(
         "use_sim_time",
-        default_value="false",
+        default_value="true",
         description="Use simulation (Gazebo) clock if true",
     )
     declare_slam_params_cmd = DeclareLaunchArgument(
@@ -85,7 +85,7 @@ def generate_launch_description():
     ld.add_action(declare_slam_params_cmd)
 
     ld.add_action(simulation)
-    # ld.add_action(nav)
     ld.add_action(slam)
+    ld.add_action(nav)  ## Nav has to be last, otherway the launch fails for unknown reasons
 
     return ld

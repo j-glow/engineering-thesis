@@ -4,7 +4,7 @@ ROS 2 based mobile robot navigation system for pedestrain following.
 ##  Dependencies 
 ```bash
 sudo apt install \
-    ros-humble-desktop-full \
+    ros-humble-desktop \
     python3-colcon-common-extensions \
     gazebo \
     ros-humble-xacro \
