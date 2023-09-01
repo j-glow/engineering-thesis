@@ -17,6 +17,7 @@ def generate_launch_description():
     sim_world = LaunchConfiguration("sim_world")
     use_sim_time = LaunchConfiguration("use_sim_time")
     slam_params = LaunchConfiguration("slam_params")
+    nav_params = LaunchConfiguration("nav_params")
 
     ## Declare launch time arguments
     declare_sim_world_cmd = DeclareLaunchArgument(
@@ -32,7 +33,12 @@ def generate_launch_description():
     declare_slam_params_cmd = DeclareLaunchArgument(
         "slam_params",
         default_value="mapper_params_online_async.yaml",
-        description="Choose custom slam_toolbox params file",
+        description="Choose custom slam_toolbox parameters file",
+    )
+    declare_nav_params_cmd = DeclareLaunchArgument(
+        "nav_params",
+        default_value="nav_default_params.yaml",
+        description="Choose custom Nav2 parameters file",
     )
 
     ## Launches
@@ -60,6 +66,10 @@ def generate_launch_description():
                 )
             ]
         ),
+        launch_arguments={
+            "params_file": PathJoinSubstitution([jetbot_ros, "config", nav_params]),
+            "use_sim_time": use_sim_time,
+        }.items(),
     )
     slam = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -83,6 +93,7 @@ def generate_launch_description():
     ld.add_action(declare_sim_world_cmd)
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_slam_params_cmd)
+    ld.add_action(declare_nav_params_cmd)
 
     ld.add_action(simulation)
     ld.add_action(slam)
