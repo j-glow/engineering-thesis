@@ -13,10 +13,10 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='kuba',
-    maintainer_email='ntfr123@gmail.com',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    maintainer='j.glowacki',
+    maintainer_email='jakubglowacki3@gmail.com',
+    description='Package containing ROS-based nodes with logic regarding the engineering thesis project.',
+    license='MIT',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [

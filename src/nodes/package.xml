@@ -3,9 +3,9 @@
 <package format="3">
   <name>nodes</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="ntfr123@gmail.com">kuba</maintainer>
-  <license>TODO: License declaration</license>
+  <description>Package containing ROS-based nodes with logic regarding the engineering thesis project.</description>
+  <maintainer email="jakubglowacki3@gmail.com">j.glowacki</maintainer>
+  <license>MIT</license>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
