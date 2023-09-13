@@ -10,8 +10,8 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
     ## Packages
-    jetbot_ros = get_package_share_directory("jetbot_ros")
-    gazebo_util = get_package_share_directory("gazebo_util")
+    jetbot = get_package_share_directory("jetbot")
+    gazebo = get_package_share_directory("gazebo")
 
     ## Launch time argument variables
     sim_world = LaunchConfiguration("sim_world")
@@ -46,7 +46,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             [
                 os.path.join(
-                    jetbot_ros,
+                    jetbot,
                     "launch",
                     "simulation.launch.py",
                 )
@@ -60,14 +60,14 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             [
                 os.path.join(
-                    jetbot_ros,
+                    jetbot,
                     "launch",
                     "nav.launch.py",
                 )
             ]
         ),
         launch_arguments={
-            "params_file": PathJoinSubstitution([jetbot_ros, "config", nav_params]),
+            "params_file": PathJoinSubstitution([jetbot, "config", nav_params]),
             "use_sim_time": use_sim_time,
         }.items(),
     )
@@ -82,7 +82,7 @@ def generate_launch_description():
             ]
         ),
         launch_arguments={
-            "params_file": PathJoinSubstitution([jetbot_ros, "config", slam_params]),
+            "params_file": PathJoinSubstitution([jetbot, "config", slam_params]),
             "use_sim_time": use_sim_time,
         }.items(),
     )

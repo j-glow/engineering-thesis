@@ -11,10 +11,10 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    package_dir = get_package_share_directory("jetbot_ros")
+    package_dir = get_package_share_directory("jetbot")
     gazebo_params_file = os.path.join(package_dir, "config", "gazebo_params.yaml")
     twist_mux_params_file = os.path.join(package_dir, "config", "twist_mux.yaml")
-    gazebo_dir = get_package_share_directory("gazebo_util")
+    gazebo_dir = get_package_share_directory("gazebo")
     
     world = LaunchConfiguration("world")
 
