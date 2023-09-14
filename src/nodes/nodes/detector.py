@@ -3,7 +3,7 @@ import rclpy
 from rclpy.node import Node
 from cv_bridge import CvBridge
 
-from sensor_msgs.msg  import Image
+from sensor_msgs.msg import Image
 
 import cv2
 from ultralytics import YOLO
@@ -12,11 +12,16 @@ class PersonDetector(Node):
     def __init__(self):
         super().__init__('person_detector')
 
-        self.image_subscriber = self.create_subscription(
+        self.image_sub = self.create_subscription(
             Image,
             'camera/image_raw',
             self.image_cb,
             1
+        )
+        self.result_image_pub = self.create_publisher(
+            Image,
+            'inference_results',
+            10
         )
         
         #ROS2<->OpenCV2 converter class
@@ -31,9 +36,10 @@ class PersonDetector(Node):
         frame = cv2.cvtColor(frame, cv2.COLOR_RBG2BGR)
 
         results = self.model(frame)
+        frame_res = results[0].plot()
 
-        cv2.imshow(results)
-
+        output = self.br.cv2_to_imgmsg(frame_res)
+        self.result_image_pub.publish(output)
     
 def main():
     rclpy.init()
