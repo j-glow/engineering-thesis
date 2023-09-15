@@ -15,6 +15,17 @@ sudo apt install \
     ros-humble-twist-mux
 ```
 
+## Folder structure
+
+* `src/gazebo`:
+    - resource files and worlds for gazebo simulation.
+* `src/jetbot`:
+    - .xacro files containing robot specification,
+    - launch files for vaious scenarios (nav launch, only robot tranforms, simulation etc.),
+    - configs for RViz2 visualization and nodes' parameters for launches.
+* `src/nodes`:
+    - ROS2 nodes for inference, navigation, sensor infomartion analysis etc,
+
 ## Installl Gazebo custom models
 
 ```bash
@@ -82,25 +93,6 @@ rviz2 -d src/jetbot_ros/slam_viz.rviz
 Visualize navigation stack (needs [Simulation with navigation stack](#launches)):
 ```bash
 rviz2 -d src/jetbot_ros/nav_viz.rviz
-```
-
-# WIP
-
-Teleop_twist_keyboard:
-```bash
-ros2 run teleop_twist_keyboard teleop_twist_keyboard cmd_vel:=key_vel
-```
-Simulation:
-```bash
-ros2 launch jetbot_ros simulation.launch.py world:=simple_room.world
-```
-Slam_toolbox:
-```bash
-ros2 launch slam_toolbox online_async_launch.py params_file:=./src/jetbot_ros/config/mapper_params_online_async.yaml use_sim_time:=true
-```
-Nav2:
-```bash
-ros2 launch nav2_bringup navigation.launch.py use_sim_time:=true
 ```
 
 # External sources used/inspired by:
