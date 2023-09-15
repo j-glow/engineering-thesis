@@ -6,6 +6,7 @@ from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 
 import cv2
+import numpy as np
 from ultralytics import YOLO
 
 class PersonDetector(Node):
@@ -21,7 +22,7 @@ class PersonDetector(Node):
         self.result_image_pub = self.create_publisher(
             Image,
             'inference_results',
-            10
+            1
         )
         
         #ROS2<->OpenCV2 converter class
@@ -29,17 +30,19 @@ class PersonDetector(Node):
         #YOLO model for detection
         self.model = YOLO('yolov8n.pt')
 
+        self.count = 0
+
     def image_cb(self, data):
         self.get_logger().info("Receiving video frame.")
 
         frame = self.br.imgmsg_to_cv2(data)
-        frame = cv2.cvtColor(frame, cv2.COLOR_RBG2BGR)
+        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
         results = self.model(frame)
         frame_res = results[0].plot()
 
-        output = self.br.cv2_to_imgmsg(frame_res)
-        self.result_image_pub.publish(output)
+        publish = self.br.cv2_to_imgmsg(np.array(frame_res), "bgr8")
+        self.result_image_pub.publish(publish)
     
 def main():
     rclpy.init()
