@@ -16,6 +16,10 @@ def main():
     for r in result:
         frame_res = r.plot()
 
+    print(result[0].boxes.xyxyn.numpy())
+    print(result[0].speed.values())
+    print(sum(list(result[0].speed.values())))
+
     cv2.imshow("results",frame_res)
 
     cv2.waitKey(1000)
