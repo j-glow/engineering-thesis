@@ -4,7 +4,8 @@ from rclpy.node import Node
 
 class CarrotFollower(Node):
     def __init__(self):
-        pass
+        super().__init__('navigator')
+
     
 def main():
     rclpy.init()
