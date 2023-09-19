@@ -1,4 +1,4 @@
 Image image
 ---
-float[4][] boxes
-int delay
+float64[4][] boxes
+float64 delay
