@@ -22,6 +22,7 @@ setup(
         'console_scripts': [
             'detector = nodes.detector:main',
             'navigator = nodes.carrot_follower:main'
+            'goal_generator = nodes.moving_target:main'
         ],
     },
 )
