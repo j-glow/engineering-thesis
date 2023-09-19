@@ -1,0 +1,4 @@
+sensor_msgs/Image image
+---
+DetectionBox[] boxes
+float64 delay
