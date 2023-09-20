@@ -4,7 +4,7 @@ from rclpy.node import Node
 from interfaces.msg import GoalFrame
 from geometry_msgs.msg import Twist
 
-from PID import PID
+from nodes.PID import PID
 
 
 class CarrotFollower(Node):
@@ -12,10 +12,10 @@ class CarrotFollower(Node):
         super().__init__("navigator")
 
         # subscribers
-        self.goal = self.create_subscription(GoalFrame, "goal_frame", self.drive_cb)
+        self.goal = self.create_subscription(GoalFrame, "goal_frame", self.drive_cb, 1)
 
         # publishers
-        self.com_vel = self.create_publisher(Twist, "nav_vel")
+        self.com_vel = self.create_publisher(Twist, "nav_vel",5)
 
         # parameters
         self.declare_parameter("distance", 1)
@@ -47,7 +47,7 @@ class CarrotFollower(Node):
 def main():
     rclpy.init()
     nav = CarrotFollower()
-    rclpy.spin()
+    rclpy.spin(nav)
 
     nav.destroy_node()
     rclpy.shutdown()

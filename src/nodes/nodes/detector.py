@@ -7,6 +7,7 @@ from rclpy.node import Node
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 from interfaces.srv import Inference
+from interfaces.msg import DetectionBox
 
 import cv2
 import numpy as np
@@ -14,37 +15,42 @@ from ultralytics import YOLO
 
 
 class PersonDetector(Node):
-    def __init__(self, model = "yolov8n.pt"):
+    def __init__(self, model="yolov8n.pt"):
         super().__init__("person_detector")
 
         self.detect_srv = self.create_service(
             Inference, "image_inference", self.detect_cb
         )
 
-        self.result_image_pub = self.create_publisher(
-            Image, "inference_results", 1
-        )
+        self.result_image_pub = self.create_publisher(Image, "inference_results", 1)
 
         # ROS2<->OpenCV2 converter class
         self.br = CvBridge()
         # YOLO model for detection
         pkg_path = get_package_share_directory("nodes")
-        self.model = YOLO(os.path.join([pkg_path, "models", model]))
+        self.model = YOLO(os.path.join(pkg_path, "models", model))
+        self.get_logger().info("Detector ready.")
 
     def detect_cb(self, data, output):
         self.get_logger().info("Receiving video frame.")
 
-        frame = self.br.imgmsg_to_cv2(data)
-        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        frame = self.br.imgmsg_to_cv2(data.image, 'bgr8')
+        # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
-        results = self.model.predict(source = frame, classes = 0)
+        results = self.model.predict(source=frame, classes=0)
         frame_res = results[0].plot()
 
         publish = self.br.cv2_to_imgmsg(np.array(frame_res), "bgr8")
         self.result_image_pub.publish(publish)
 
-        output.boxes = results[0].boxes.xyxyn.numpy()
-        output.delay = sum(list(results[0].speed.keys()))
+        boxes = []
+        for box in results[0].boxes.xyxyn.numpy():
+            boxxx = DetectionBox()
+            boxxx.xyxyn = box
+            boxes.append(boxxx)
+
+        output.boxes = boxes
+        output.delay = sum(list(results[0].speed.values()))
 
         return output
 

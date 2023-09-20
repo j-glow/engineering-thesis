@@ -3,11 +3,16 @@
 from ultralytics import YOLO
 import cv2
 
+from ament_index_python.packages import get_package_share_directory
+import os
+
 
 # Person in COCO dataset is class_id==0
 
 def main():
-    model = YOLO('yolov8n.pt')
+    pkg_path = get_package_share_directory("nodes")
+    print(pkg_path)
+    model = YOLO(os.path.join(pkg_path, "models", "yolov8n.pt"))
     frame = cv2.imread('resources/people_street.jpeg')
     result = model(frame)
 
