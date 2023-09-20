@@ -1,8 +1,10 @@
 import rclpy
+import os
+
+from ament_index_python.packages import get_package_share_directory
 
 from rclpy.node import Node
 from cv_bridge import CvBridge
-
 from sensor_msgs.msg import Image
 from interfaces.srv import Detector
 
@@ -12,7 +14,7 @@ from ultralytics import YOLO
 
 
 class PersonDetector(Node):
-    def __init__(self):
+    def __init__(self, model = "yolov8n.pt"):
         super().__init__("person_detector")
 
         self.detect_srv = self.create_service(
@@ -26,7 +28,8 @@ class PersonDetector(Node):
         # ROS2<->OpenCV2 converter class
         self.br = CvBridge()
         # YOLO model for detection
-        self.model = YOLO("yolov8n.pt")
+        pkg_path = get_package_share_directory("nodes")
+        self.model = YOLO(os.path.join([pkg_path, "models", model]))
 
     def detect_cb(self, data, output):
         self.get_logger().info("Receiving video frame.")
