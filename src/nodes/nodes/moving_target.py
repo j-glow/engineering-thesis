@@ -4,7 +4,8 @@ import message_filters
 
 from rclpy.node import Node
 from sensor_msgs.msg import LaserScan, Image, CameraInfo
-from interfaces.srv import Inference, GoalFrame, DetectionBox
+from interfaces.srv import Inference
+from interfaces.msg import GoalFrame
 
 from collections import deque
 

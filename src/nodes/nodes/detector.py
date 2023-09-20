@@ -6,7 +6,7 @@ from ament_index_python.packages import get_package_share_directory
 from rclpy.node import Node
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
-from interfaces.srv import Detector
+from interfaces.srv import Inference
 
 import cv2
 import numpy as np
@@ -18,7 +18,7 @@ class PersonDetector(Node):
         super().__init__("person_detector")
 
         self.detect_srv = self.create_service(
-            Detector, "image_inference", self.detect_cb
+            Inference, "image_inference", self.detect_cb
         )
 
         self.result_image_pub = self.create_publisher(
