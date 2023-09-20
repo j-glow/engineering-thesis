@@ -8,7 +8,6 @@ from interfaces.srv import Inference, GoalFrame, DetectionBox
 
 from collections import deque
 
-
 class MovingTargetGenerator(Node):
     def __init__(self, rate, buf_len):
         super().__init__("goal_frame_gen")
@@ -43,8 +42,6 @@ class MovingTargetGenerator(Node):
             self.get_logger().warn("Currently multiple person detection is unsupported.")
             self.get_logger().warn("Choosing first occurence for processing.")
 
-
-        # TODO FIND FRAME
         bbox_center = (boxes[0][0] + boxes[0][2]) / 2
         frame_center = camera_info.K[2]
         img_width = camera_info.width
