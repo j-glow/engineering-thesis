@@ -15,6 +15,7 @@ sudo apt install \
     ros-humble-navigation2 \
     ros-humble-nav2-bringup \
     ros-humble-twist-mux
+python3 -m pip install cmake ultralytics
 ```
 
 ## Folder structure
@@ -52,7 +53,7 @@ mkdir build
 cd build
 cmake ..
 make
-cd ../../../..
+cd ../../../../..
 source src/gazebo/install_gazebo_models.bash
 ```
 

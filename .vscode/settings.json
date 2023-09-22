@@ -2,4 +2,16 @@
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
+    "python.autoComplete.extraPaths": [
+        "/home/kuba/engineering-thesis/install/nodes/lib/python3.10/site-packages",
+        "/home/kuba/engineering-thesis/install/interfaces/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/kuba/engineering-thesis/install/nodes/lib/python3.10/site-packages",
+        "/home/kuba/engineering-thesis/install/interfaces/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
 }
