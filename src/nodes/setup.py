@@ -4,6 +4,7 @@ import os
 
 package_name = "nodes"
 nn_models = glob(os.path.join("models","*.pt"))
+launch_files = glob(os.path.join("launch","*.launch.py"))
 
 setup(
     name=package_name,
@@ -13,6 +14,7 @@ setup(
         ("share/ament_index/resource_index/packages", ["resource/" + package_name]),
         ("share/" + package_name, ["package.xml"]),
         ("share/" + package_name + "/models", nn_models),
+        ("share/" + package_name + "/launch", launch_files)
     ],
     install_requires=["setuptools", "interfaces"],
     zip_safe=True,

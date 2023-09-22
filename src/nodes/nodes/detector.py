@@ -37,7 +37,7 @@ class PersonDetector(Node):
         frame = self.br.imgmsg_to_cv2(data.image, 'bgr8')
         # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
-        results = self.model.predict(source=frame, classes=0)
+        results = self.model.predict(source=frame, classes=0, device="cpu")
         frame_res = results[0].plot()
 
         publish = self.br.cv2_to_imgmsg(np.array(frame_res), "bgr8")
@@ -45,13 +45,14 @@ class PersonDetector(Node):
 
         boxes = []
         for box in results[0].boxes.xyxyn.numpy():
-            boxxx = DetectionBox()
-            boxxx.xyxyn = box
-            boxes.append(boxxx)
-
+            dbox_msg = DetectionBox()
+            dbox_msg.xyxyn = box.tolist()
+            boxes.append(dbox_msg)
+        
         output.boxes = boxes
         output.delay = sum(list(results[0].speed.values()))
-
+        self.get_logger().info("Returning from callback.")
+        
         return output
 
 
