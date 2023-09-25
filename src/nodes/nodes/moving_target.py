@@ -58,24 +58,36 @@ class MovingTargetGenerator(Node):
             )
             self.get_logger().warn("Choosing first occurence for processing.")
 
-        bbox = result.boxes[0].xyxyn
-        bbox_center = (bbox[0] + bbox[2]) / 2
-        frame_center = camera_info.k[2]
-        img_width = camera_info.width
-        focal_len_x = camera_info.k[0]
 
-        angle = math.atan((bbox_center - frame_center) * img_width / focal_len_x)
+        self.get_logger().info(f"START")
+
+        bbox = result.boxes[0].xyxyn
+        self.get_logger().info(f"{bbox}")
+        bbox_center = (bbox[0] + bbox[2]) / 2
+        self.get_logger().info(f"{bbox_center}")
+        frame_center = camera_info.k[2]
+        self.get_logger().info(f"{frame_center}")
+        img_width = camera_info.width
+        self.get_logger().info(f"{img_width}")
+        focal_len_x = camera_info.k[0]
+        self.get_logger().info(f"{focal_len_x}")
+
+        self.get_logger().info(f"{(bbox_center * img_width - frame_center) / focal_len_x}")
+        angle = math.atan((bbox_center * img_width - frame_center) / focal_len_x)
+        self.get_logger().info(f"{angle}")
+
 
         ray_index = round((scan.angle_min + angle) / scan.angle_increment)
         distance = scan.ranges[int(ray_index)]
         self.frame_buf.append((distance, angle))
 
+        self.get_logger().info(f"STOP")
+
+
         data = GoalFrame()
         data.distance = distance
         data.angle = angle
         self.frame_newest.publish(data)
-
-
 
 def main():
     rclpy.init()

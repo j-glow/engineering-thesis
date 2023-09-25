@@ -21,10 +21,10 @@ class CarrotFollower(Node):
         self.declare_parameter("distance", 1)
         self.declare_parameter("linear_p", 0.1)
         self.declare_parameter("linear_i", 0)
-        self.declare_parameter("linear_d", 0)
+        self.declare_parameter("linear_d", -0.07)
         self.declare_parameter("angular_p", 0.1)
         self.declare_parameter("angular_i", 0)
-        self.declare_parameter("angular_d", 0)
+        self.declare_parameter("angular_d", -0.07)
 
         # controllers
         p, i, d = [
