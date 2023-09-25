@@ -40,20 +40,15 @@ class MovingTargetGenerator(Node):
         # Publishers
         self.frame_newest = self.create_publisher(GoalFrame, "goal_frame", 5)
 
-        while not self.detector_client.wait_for_service(timeout_sec=1.0):
+        while not self.detector_client.wait_for_service(timeout_sec=2.0):
             self.get_logger().info("Detector not initialized, waiting...")
 
     def _process_data_cb(self, scan, image, camera_info):
         request = Inference.Request()
         request.image = image
-        self.get_logger().info("Sending video frame.")
         result = self.detector_client.call(request)
-        self.get_logger().info("Received inference result.")
-
-        self.get_logger().info(f"Current inference delay: {result.delay:.2f}ms")
 
         if len(result.boxes) == 0:
-            self.get_logger().info("No matches in current frame.")
             return
 
         if len(result.boxes) > 1:
@@ -63,7 +58,6 @@ class MovingTargetGenerator(Node):
             )
             self.get_logger().warn("Choosing first occurence for processing.")
 
-        self.get_logger().info(f"{result.boxes}")
         bbox = result.boxes[0].xyxyn
         bbox_center = (bbox[0] + bbox[2]) / 2
         frame_center = camera_info.k[2]

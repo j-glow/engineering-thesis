@@ -10,7 +10,7 @@ class PID():
         self.error_history = deque(maxlen=err_history_len)
 
     def __call__(self, error):
-        output = self.p * error + self.d * (error - self.error_history[-1])
+        output = self.p * error + self.d * (error - self.error_history.)
         self.error_history.append(error)
 
         for x in self.error_history:

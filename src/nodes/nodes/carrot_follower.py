@@ -8,14 +8,14 @@ from nodes.PID import PID
 
 
 class CarrotFollower(Node):
-    def __init__(self, distance=1):
+    def __init__(self):
         super().__init__("navigator")
 
         # subscribers
         self.goal = self.create_subscription(GoalFrame, "goal_frame", self.drive_cb, 1)
 
         # publishers
-        self.com_vel = self.create_publisher(Twist, "nav_vel",5)
+        self.com_vel = self.create_publisher(Twist, "nav_vel", 5)
 
         # parameters
         self.declare_parameter("distance", 1)
@@ -27,10 +27,16 @@ class CarrotFollower(Node):
         self.declare_parameter("angular_d", 0)
 
         # controllers
-        p, i, d = self.get_parameters(["linear_p", "linear_i", "linear_d"])
+        p, i, d = [
+            x.value for x in self.get_parameters(["linear_p", "linear_i", "linear_d"])
+        ]
         self.dis_pid = PID(p, i, d)
-        p, i, d = self.get_parameters(["angular_p", "angular_i", "angular_d"])
+        p, i, d = [
+            x.value
+            for x in self.get_parameters(["angular_p", "angular_i", "angular_d"])
+        ]
         self.yaw_pid = PID(p, i, d)
+        self.distance = self.get_parameter("distance").value
 
     def drive_cb(self, input):
         command = Twist()
