@@ -1,4 +1,5 @@
 from collections import deque
+import numpy as np
 
 
 class PID():
@@ -8,13 +9,16 @@ class PID():
         self.d = d
 
         self.error_history = deque(maxlen=err_history_len)
+        self.error_history.extend(np.zeros((err_history_len)))
+        print(self.error_history)
 
     def __call__(self, error):
-        output = self.p * error + self.d * (error - self.error_history.)
-        self.error_history.append(error)
+        output = self.p * error + self.d * (error - self.error_history[-1])
 
         for x in self.error_history:
             output += x * self.i
+            
+        self.error_history.append(error)
 
         return output
     

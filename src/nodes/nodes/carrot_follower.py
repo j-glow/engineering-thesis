@@ -2,7 +2,7 @@ import rclpy
 
 from rclpy.node import Node
 from interfaces.msg import GoalFrame
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist, Vector3
 
 from nodes.PID import PID
 
@@ -19,10 +19,10 @@ class CarrotFollower(Node):
 
         # parameters
         self.declare_parameter("distance", 1)
-        self.declare_parameter("linear_p", 1)
+        self.declare_parameter("linear_p", 0.1)
         self.declare_parameter("linear_i", 0)
         self.declare_parameter("linear_d", 0)
-        self.declare_parameter("angular_p", 1)
+        self.declare_parameter("angular_p", 0.1)
         self.declare_parameter("angular_i", 0)
         self.declare_parameter("angular_d", 0)
 
@@ -44,8 +44,8 @@ class CarrotFollower(Node):
         error_dis = input.distance - self.distance
         error_yaw = input.angle
 
-        command.linear[0] = self.dis_pid(error_dis)
-        command.angular[2] = self.yaw_pid(error_yaw)
+        command.linear.x = self.dis_pid(error_dis)
+        command.angular.z = self.yaw_pid(error_yaw)
 
         self.com_vel.publish(command)
 
