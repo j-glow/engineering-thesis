@@ -32,6 +32,10 @@ class PersonDetector(Node):
         self.get_logger().info("Detector ready.")
 
     def detect_cb(self, data, output):
+        if not data.image.data:
+            self.get_logger().info("Empty image. Returning from detector service.")
+            return output
+        
         self.get_logger().info("Receiving video frame.")
 
         frame = self.br.imgmsg_to_cv2(data.image, 'bgr8')
