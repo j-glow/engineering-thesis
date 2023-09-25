@@ -127,3 +127,7 @@ rviz2 -d src/jetbot_ros/nav_viz.rviz
 * <https://docs.ros.org/en/humble/>
 * <https://navigation.ros.org/>
 * <https://github.com/JiangweiNEU/actor_collisions>
+
+## Important posts
+* https://answers.ros.org/question/302037/ros2-how-to-call-a-service-from-the-callback-function-of-a-subscriber/
+* https://docs.ros.org/en/foxy/How-To-Guides/Using-callback-groups.html
