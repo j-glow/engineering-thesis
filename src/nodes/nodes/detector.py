@@ -9,7 +9,6 @@ from sensor_msgs.msg import Image
 from interfaces.srv import Inference
 from interfaces.msg import DetectionBox
 
-import cv2
 import numpy as np
 from ultralytics import YOLO
 
@@ -39,7 +38,6 @@ class PersonDetector(Node):
         # self.get_logger().info("Receiving video frame.")
 
         frame = self.br.imgmsg_to_cv2(data.image, 'bgr8')
-        # frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
         results = self.model.predict(source=frame, classes=0, device="cpu", verbose=False)
         frame_res = results[0].plot()
