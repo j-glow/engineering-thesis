@@ -15,7 +15,10 @@ sudo apt install \
     ros-humble-navigation2 \
     ros-humble-nav2-bringup \
     ros-humble-twist-mux
-python3 -m pip install cmake ultralytics
+python3 -m pip install \
+    cmake \
+    ultralytics \
+    pyquaternion
 ```
 
 ## Folder structure
@@ -97,25 +100,25 @@ Launch RViz2 using predefined configs.
 View robot model (needs [Robot state publisher](#launches)):
 
 ```bash
-rviz2 -d src/jetbot_ros/view_robot.rviz
+rviz2 -d src/jetbot/config/view_robot.rviz
 ```
 
 View robot movement (needs [Simulation](#launches)):
 
 ```bash
-rviz2 -d src/jetbot_ros/robot_odom.rviz
+rviz2 -d src/jetbot/config/robot_odom.rviz
 ```
 
 Visualize slam (needs [Simulation](#launches)):
 
 ```bash
-rviz2 -d src/jetbot_ros/slam_viz.rviz
+rviz2 -d src/jetbot/config/slam_viz.rviz
 ```
 
 Visualize navigation stack (needs [Simulation with navigation stack](#launches)):
 
 ```bash
-rviz2 -d src/jetbot_ros/nav_viz.rviz
+rviz2 -d src/jetbot/config/nav_viz.rviz
 ```
 
 ## External sources used/inspired by
