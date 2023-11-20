@@ -3,10 +3,6 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    navigator = Node(
-        package="nodes",
-        executable="carrot_follower",
-    )
     detector = Node(
         package="nodes",
         executable="detector",
@@ -18,7 +14,6 @@ def generate_launch_description():
 
     return LaunchDescription(
         [
-            navigator,
             goal_generator,
             detector,
         ]

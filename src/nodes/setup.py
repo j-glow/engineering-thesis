@@ -26,7 +26,6 @@ setup(
     entry_points={
         "console_scripts": [
             "detector = nodes.detector:main",
-            "carrot_follower = nodes.carrot_follower:main",
             "moving_target = nodes.moving_target:main",
         ],
     },
