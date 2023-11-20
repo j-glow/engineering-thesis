@@ -1,19 +1,20 @@
 import rclpy
 import math
 import message_filters
+import tf2_ros
 
 from rclpy.node import Node
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 from rclpy.executors import MultiThreadedExecutor
 from sensor_msgs.msg import LaserScan, Image, CameraInfo
 from interfaces.srv import Inference
-from interfaces.msg import GoalFrame
+from geometry_msgs.msg import PoseStamped, TransformStamped
+from pyquaternion import Quaternion
 
 from collections import deque
 
-
 class MovingTargetGenerator(Node):
-    def __init__(self, buf_len):
+    def __init__(self):
         super().__init__("moving_target")
 
         # Different callback group for service not to deadlock while nesting callbacks
@@ -22,7 +23,15 @@ class MovingTargetGenerator(Node):
             Inference, "image_inference", callback_group=client_cb_group
         )
 
+        # Buffers
+        self.tf_buffer = tf2_ros.Buffer()
+        self.goal_buffer = deque(maxlen=5)
+
         # Data subscribers
+        ## Create a TransformListener
+        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer)
+
+        ## Create a message filter subscriber for sensors data
         self.lidar = message_filters.Subscriber(self, LaserScan, "scan")
         self.camera = message_filters.Subscriber(self, Image, "camera/image_raw")
         self.camera_info = message_filters.Subscriber(
@@ -34,11 +43,8 @@ class MovingTargetGenerator(Node):
         )
         self.ats.registerCallback(self._process_data_cb)
 
-        # Attributes
-        self.frame_buf = deque(maxlen=buf_len)
-
         # Publishers
-        self.frame_newest = self.create_publisher(GoalFrame, "goal_frame", 5)
+        self.goal_update = self.create_publisher(PoseStamped, "goal_pose", 5)
 
         while not self.detector_client.wait_for_service(timeout_sec=2.0):
             self.get_logger().info("Detector not initialized, waiting...")
@@ -64,26 +70,61 @@ class MovingTargetGenerator(Node):
         img_width = camera_info.width
         focal_len_x = camera_info.k[0]
 
-        angle = math.atan((bbox_center * img_width - frame_center) / focal_len_x)
+        angle_to_goal = math.atan((bbox_center * img_width - frame_center) / focal_len_x)
 
-        ray_index = round((scan.angle_min + angle) / scan.angle_increment)
-        distance = scan.ranges[int(ray_index)]
-        self.get_logger().info(f"Distance = {distance}m     Angle = {angle}rad")
+        ray_index = round((scan.angle_min + angle_to_goal) / scan.angle_increment)
+        distance_to_goal = scan.ranges[int(ray_index)]
+        self.get_logger().info(f"Distance = {distance_to_goal}m     Angle = {angle_to_goal}rad")
 
-        ## TODO: fix distance parser to filter out rays that are shooting between legs.
-        # idea 1: filter out by excluding all but the shortest distances (implement some margin not to not get confused by random errors)
-        # idea 2: create kalman filter for predicted next frame position 
+        #Get the robot's pose from the base_footprint tf
+        while not self.tf_buffer.can_transform('map', 'base_footprint', rclpy.Time(0)):
+            pass
+        robot_pose: TransformStamped = self.tf_buffer.lookup_transform('map', 'base_footprint', rclpy.Time(0))
 
-        self.frame_buf.append((distance, angle))
+        # Create a PoseStamped message for the robot's pose
+        robot_pose = PoseStamped()
+        robot_quaternion = Quaternion(
+            w=robot_pose.pose.orientation.w,
+            x=robot_pose.pose.orientation.x,
+            y=robot_pose.pose.orientation.y,
+            z=robot_pose.pose.orientation.z
+        )
 
-        data = GoalFrame()
-        data.distance = distance
-        data.angle = angle
-        self.frame_newest.publish(data)
+        robot_yaw, _, _ = robot_quaternion.yaw_pitch_roll
+
+        # Calculate goal position relative to the robot
+        goal_x_relative = distance_to_goal * math.cos(angle_to_goal)
+        goal_y_relative = distance_to_goal * math.sin(angle_to_goal)
+
+        # Transform to map coordinates
+        goal_x = robot_pose.pose.position.x + goal_x_relative * math.cos(robot_yaw) - goal_y_relative * math.sin(robot_yaw)
+        goal_y = robot_pose.pose.position.y + goal_x_relative * math.sin(robot_yaw) + goal_y_relative * math.cos(robot_yaw)
+
+        # Create a PoseStamped message for the goal
+        goal_pose = robot_pose()
+        goal_pose.pose.position.x = goal_x
+        goal_pose.pose.position.y = goal_y
+
+        self.goal_buffer.append([goal_x, goal_y])
+        if not self.goal_buffer.empty():
+            # Calculate the orientation angle between the oldest and newest goal position
+            oldest_goal = self.goal_buffer[0]
+            newest_goal = self.goal_buffer[-1]
+            orientation_angle = math.atan2(newest_goal[1] - oldest_goal[1], newest_goal[0] - oldest_goal[0])
+
+            goal_pose.pose.orientation = Quaternion(
+                x=0.0,
+                y=0.0,
+                z=math.sin(orientation_angle / 2),
+                w=math.cos(orientation_angle / 2)
+            )
+
+        # Publish to ros topic
+        self.goal_update.publish(goal_pose)
 
 def main():
     rclpy.init()
-    node = MovingTargetGenerator(20)
+    node = MovingTargetGenerator()
     executor = MultiThreadedExecutor()
     executor.add_node(node)
 
