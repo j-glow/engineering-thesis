@@ -57,7 +57,7 @@ cd build
 cmake ..
 make
 cd ../../../../..
-source src/gazebo/install_gazebo_models.bash
+source src/gazebo/install_gaz_res.bash
 ```
 
 ## Launches
