@@ -5,14 +5,17 @@ import tf2_ros
 import numpy as np
 
 from rclpy.node import Node
+from rclpy.time import Duration
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
 from rclpy.executors import MultiThreadedExecutor
 from sensor_msgs.msg import LaserScan, Image, CameraInfo
 from interfaces.srv import Inference
-from geometry_msgs.msg import PoseStamped, TransformStamped
-from pyquaternion import Quaternion
+from geometry_msgs.msg import PoseStamped, TransformStamped, Quaternion
+from pyquaternion import Quaternion as PyQuaternion
+
 
 from collections import deque, defaultdict
+
 
 class MovingTargetGenerator(Node):
     def __init__(self):
@@ -45,7 +48,7 @@ class MovingTargetGenerator(Node):
         self.ats.registerCallback(self._process_data_cb)
 
         # Publishers
-        self.goal_update = self.create_publisher(PoseStamped, "goal_pose", 5)
+        self.goal_update = self.create_publisher(PoseStamped, "goal_update", 5)
 
         while not self.detector_client.wait_for_service(timeout_sec=2.0):
             self.get_logger().info("Detector not initialized, waiting...")
@@ -89,7 +92,9 @@ class MovingTargetGenerator(Node):
             distance_groups[group].append(distance)
 
         # Find the group with the smallest average distance
-        smallest_distance_group = min(distance_groups.items(), key=lambda item: np.mean(item[1]))
+        smallest_distance_group = min(
+            distance_groups.items(), key=lambda item: np.mean(item[1])
+        )
 
         # The distances in this group are the distances to the detected bounding box
         distances_to_bbox = smallest_distance_group[1]
@@ -100,20 +105,34 @@ class MovingTargetGenerator(Node):
         # Calculate the center angle of the bounding box
         angle_to_goal = (angle_left + angle_right) / 2
 
-        self.get_logger().info(f"Distance = {distance_to_goal}m     Angle = {angle_to_goal}rad")
+        # self.get_logger().info(
+        #     f"Distance = {distance_to_goal}m     Angle = {angle_to_goal}rad"
+        # )
 
-        #Get the robot's pose from the base_link tf
-        while not self.tf_buffer.can_transform('odom', 'base_link', self.get_clock().now().to_msg()):
-            self.get_logger().info("Waiting for transform from base_link to odom...")
-        robot_pose: TransformStamped = self.tf_buffer.lookup_transform('map', 'base_link', self.get_clock().now().to_msg())
+        # Get the robot's pose from the base_footprint tf
+        while not self.tf_buffer.can_transform(
+            "map",
+            "base_footprint",
+            rclpy.time.Time(),
+            timeout=Duration(seconds=1.0),
+        ):
+            self.get_logger().info(
+                "Waiting for transform from base_footprint to map..."
+            )
+        robot_pose: TransformStamped = self.tf_buffer.lookup_transform(
+            "map",
+            "base_footprint",
+            rclpy.time.Time(),
+            timeout=Duration(seconds=1.0),
+        )
 
         # Create a PoseStamped message for the robot's pose
         robot_pose = PoseStamped()
-        robot_quaternion = Quaternion(
+        robot_quaternion = PyQuaternion(
             w=robot_pose.pose.orientation.w,
             x=robot_pose.pose.orientation.x,
             y=robot_pose.pose.orientation.y,
-            z=robot_pose.pose.orientation.z
+            z=robot_pose.pose.orientation.z,
         )
 
         robot_yaw, _, _ = robot_quaternion.yaw_pitch_roll
@@ -123,30 +142,48 @@ class MovingTargetGenerator(Node):
         goal_y_rel = distance_to_goal * math.sin(angle_to_goal)
 
         # Transform to map coordinates
-        goal_x = robot_pose.pose.position.x + goal_x_rel * math.cos(robot_yaw) - goal_y_rel * math.sin(robot_yaw)
-        goal_y = robot_pose.pose.position.y + goal_x_rel * math.sin(robot_yaw) + goal_y_rel * math.cos(robot_yaw)
+        goal_x = (
+            robot_pose.pose.position.x
+            + goal_x_rel * math.cos(robot_yaw)
+            - goal_y_rel * math.sin(robot_yaw)
+        )
+        goal_y = (
+            robot_pose.pose.position.y
+            + goal_x_rel * math.sin(robot_yaw)
+            + goal_y_rel * math.cos(robot_yaw)
+        )
 
         # Create a PoseStamped message for the goal
-        goal_pose = robot_pose()
+        goal_pose = robot_pose
         goal_pose.pose.position.x = goal_x
         goal_pose.pose.position.y = goal_y
 
         self.goal_buffer.append([goal_x, goal_y])
-        if not self.goal_buffer.empty():
+        if len(self.goal_buffer) > 1:
             # Calculate the orientation angle between the oldest and newest goal position
             oldest_goal = self.goal_buffer[0]
             newest_goal = self.goal_buffer[-1]
-            orientation_angle = math.atan2(newest_goal[1] - oldest_goal[1], newest_goal[0] - oldest_goal[0])
-
-            goal_pose.pose.orientation = Quaternion(
-                x=0.0,
-                y=0.0,
-                z=math.sin(orientation_angle / 2),
-                w=math.cos(orientation_angle / 2)
+            orientation_angle = math.atan2(
+                newest_goal[1] - oldest_goal[1], newest_goal[0] - oldest_goal[0]
             )
+
+            # Create a quaternion using pyquaternion
+            py_quat = PyQuaternion(axis=[0.0, 0.0, 1.0], angle=orientation_angle)
+
+            # Convert to a geometry_msgs.msg.Quaternion
+            goal_pose.pose.orientation = Quaternion(
+                x=py_quat.x,
+                y=py_quat.y,
+                z=py_quat.z,
+                w=py_quat.w,
+            )
+
+        goal_pose.header.stamp = rclpy.time.Time().to_msg()
+        goal_pose.header.frame_id = "map"
 
         # Publish to ros topic
         self.goal_update.publish(goal_pose)
+
 
 def main():
     rclpy.init()

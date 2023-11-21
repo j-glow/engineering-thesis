@@ -121,6 +121,14 @@ Visualize navigation stack (needs [Simulation with navigation stack](#launches))
 rviz2 -d src/jetbot/config/nav_viz.rviz
 ```
 
+WIP commands:
+```bash
+ros2 run tf2_tools view_frames
+ros2 run tf2_ros tf2_echo map base_footprint
+ros2 launch slam_toolbox online_async_launch.py params_file:=src/jetbot/config/mapper_params_online_async.yaml use_sim_time:=true
+ros2 launch nodes goal_update.launch.py 
+```
+
 ## External sources used/inspired by
 
 * <https://github.com/dusty-nv/jetbot_ros>
