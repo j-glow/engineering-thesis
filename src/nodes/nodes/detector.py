@@ -32,11 +32,8 @@ class PersonDetector(Node):
 
     def detect_cb(self, data, output):
         if not data.image.data:
-            # self.get_logger().info("Empty image. Returning from detector service.")
             return output
         
-        # self.get_logger().info("Receiving video frame.")
-
         frame = self.br.imgmsg_to_cv2(data.image, 'bgr8')
 
         results = self.model.predict(source=frame, classes=0, device="cpu", verbose=False)
@@ -52,7 +49,6 @@ class PersonDetector(Node):
             boxes.append(dbox_msg)
         
         output.boxes = boxes
-        # self.get_logger().info("Returning from callback.")
         
         return output
 

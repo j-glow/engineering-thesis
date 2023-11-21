@@ -119,12 +119,12 @@ class MovingTargetGenerator(Node):
         robot_yaw, _, _ = robot_quaternion.yaw_pitch_roll
 
         # Calculate goal position relative to the robot
-        goal_x_relative = distance_to_goal * math.cos(angle_to_goal)
-        goal_y_relative = distance_to_goal * math.sin(angle_to_goal)
+        goal_x_rel = distance_to_goal * math.cos(angle_to_goal)
+        goal_y_rel = distance_to_goal * math.sin(angle_to_goal)
 
         # Transform to map coordinates
-        goal_x = robot_pose.pose.position.x + goal_x_relative * math.cos(robot_yaw) - goal_y_relative * math.sin(robot_yaw)
-        goal_y = robot_pose.pose.position.y + goal_x_relative * math.sin(robot_yaw) + goal_y_relative * math.cos(robot_yaw)
+        goal_x = robot_pose.pose.position.x + goal_x_rel * math.cos(robot_yaw) - goal_y_rel * math.sin(robot_yaw)
+        goal_y = robot_pose.pose.position.y + goal_x_rel * math.sin(robot_yaw) + goal_y_rel * math.cos(robot_yaw)
 
         # Create a PoseStamped message for the goal
         goal_pose = robot_pose()
