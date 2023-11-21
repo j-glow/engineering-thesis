@@ -2,6 +2,7 @@ import rclpy
 import math
 import message_filters
 import tf2_ros
+import numpy as np
 
 from rclpy.node import Node
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
@@ -11,7 +12,7 @@ from interfaces.srv import Inference
 from geometry_msgs.msg import PoseStamped, TransformStamped
 from pyquaternion import Quaternion
 
-from collections import deque
+from collections import deque, defaultdict
 
 class MovingTargetGenerator(Node):
     def __init__(self):
@@ -29,7 +30,7 @@ class MovingTargetGenerator(Node):
 
         # Data subscribers
         ## Create a TransformListener
-        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer)
+        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
 
         ## Create a message filter subscriber for sensors data
         self.lidar = message_filters.Subscriber(self, LaserScan, "scan")
@@ -64,16 +65,41 @@ class MovingTargetGenerator(Node):
             )
             self.get_logger().warn("Choosing first occurence for processing.")
 
-        bbox = result.boxes[0].xyxyn
-        bbox_center = (bbox[0] + bbox[2]) / 2
-        frame_center = camera_info.k[2]
-        img_width = camera_info.width
-        focal_len_x = camera_info.k[0]
+            bbox = result.boxes[0].xyxyn
+            bbox_left = bbox[0]
+            bbox_right = bbox[2]
+            frame_center = camera_info.k[2]
+            img_width = camera_info.width
+            focal_len_x = camera_info.k[0]
 
-        angle_to_goal = math.atan((bbox_center * img_width - frame_center) / focal_len_x)
+            # Calculate the angles to the left and right edges of the bounding box
+            angle_left = math.atan((bbox_left * img_width - frame_center) / focal_len_x)
+            angle_right = math.atan((bbox_right * img_width - frame_center) / focal_len_x)
 
-        ray_index = round((scan.angle_min + angle_to_goal) / scan.angle_increment)
-        distance_to_goal = scan.ranges[int(ray_index)]
+            # Get the indices of the LiDAR rays that fall within these angles
+            ray_index_left = round((scan.angle_min + angle_left) / scan.angle_increment)
+            ray_index_right = round((scan.angle_min + angle_right) / scan.angle_increment)
+
+            # Group the distances of these rays by distance
+            distance_groups = defaultdict(list)
+            for i in range(ray_index_left, ray_index_right + 1):
+                distance = scan.ranges[i]
+                # Group distances that are close to each other (within 0.3m)
+                group = round(distance / 0.3)
+                distance_groups[group].append(distance)
+
+            # Find the group with the smallest average distance
+            smallest_distance_group = min(distance_groups.items(), key=lambda item: np.mean(item[1]))
+
+            # The distances in this group are the distances to the detected bounding box
+            distances_to_bbox = smallest_distance_group[1]
+
+            # Set distance_to_goal as the mean distance of the smallest distance group
+            distance_to_goal = np.mean(distances_to_bbox)
+
+            # Calculate the center angle of the bounding box
+            angle_to_goal = (angle_left + angle_right) / 2
+
         self.get_logger().info(f"Distance = {distance_to_goal}m     Angle = {angle_to_goal}rad")
 
         #Get the robot's pose from the base_footprint tf
