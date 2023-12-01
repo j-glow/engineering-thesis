@@ -87,9 +87,14 @@ class MovingTargetGenerator(Node):
         distance_groups = defaultdict(list)
         for i in range(ray_index_left, ray_index_right + 1):
             distance = scan.ranges[i]
+            if distance == float("inf"): # Ignore distances greater laser range
+                continue
+
             # Group distances that are close to each other (within 0.3m)
             group = round(distance / 0.3)
             distance_groups[group].append(distance)
+        if distance_groups == {}: # Ignore if no distances are found
+            return
 
         # Find the group with the smallest average distance
         smallest_distance_group = min(
