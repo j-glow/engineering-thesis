@@ -4,6 +4,8 @@ ROS 2 based mobile robot navigation system for pedestrain following.
 
 ## Dependencies
 
+In case of not being able to access ROS packages, follow official [ROS Install Guide](https://docs.ros.org/en/humble/Installation.html)
+
 ```bash
 sudo apt install \
     ros-humble-desktop \
