@@ -8,9 +8,9 @@ In case of not being able to access ROS packages, follow official [ROS Install G
 
 ```bash
 sudo apt install \
-    ros-humble-desktop \
     python3-colcon-common-extensions \
     gazebo \
+    ros-humble-desktop \
     ros-humble-xacro \
     ros-humble-gazebo-ros-pkgs \
     ros-humble-slam-toolbox \
@@ -34,11 +34,11 @@ python3 -m pip install \
 * `src/nodes`:
   * ROS2 nodes for inference, navigation, sensor infomartion analysis etc,
 
-## Installl Gazebo custom models
+## Makefile shortcuts
 
-```bash
-source src/gazebo/install_gazebo_models.bash
-```
+* `make install_gazebo_res`       - build and install gazebo plugins and resources
+* `make control`                  - open hand-steering node for robot simulation
+* `make clean`                    - clean all built files
 
 ## Build
 
@@ -67,32 +67,26 @@ source src/gazebo/install_gaz_res.bash
 Robot state publisher:
 
 ```bash
-ros2 launch jetbot_ros rsp.launch.py
+ros2 launch jetbot rsp.launch.py
 ```
 
 Simulation launch:
 
 ```bash
-ros2 launch jetbot_ros simulation.launch.py
+ros2 launch jetbot simulation.launch.py
 ```
 
 Optionally append command with optional world argument using "world:={world_name}" syntax providing name of world from src/gazebo/worlds folder, eg.:
 
 ```bash
-ros2 launch jetbot_ros simulation.launch.py world:=custom.world
-ros2 launch jetbot_ros simulation.launch.py world:=simple_room.world
+ros2 launch jetbot simulation.launch.py world:=custom.world
+ros2 launch jetbot simulation.launch.py world:=simple_room.world
 ```
 
 Simulation with navigation stack launch:
 
 ```bash
-ros2 launch jetbot_ros sim_with_nav.launch.py
-```
-
-## Hand-steering the robot
-
-```bash
-ros2 run teleop_twist_keyboard teleop_twist_keyboard -ros-args --remap cmd_vel:=key_vel
+ros2 launch jetbot sim_with_nav.launch.py
 ```
 
 ## RViz2 configs
