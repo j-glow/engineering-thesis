@@ -50,18 +50,6 @@ colcon build
 source install/setup.bash
 ```
 
-Installl Gazebo custom models/plugins:
-
-```bash
-cd src/gazebo/plugins/actor_collisions
-mkdir build
-cd build
-cmake ..
-make
-cd ../../../../..
-source src/gazebo/install_gaz_res.bash
-```
-
 ## Launches
 
 Robot state publisher:
