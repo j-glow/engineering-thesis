@@ -3,6 +3,7 @@ import math
 import message_filters
 import tf2_ros
 import numpy as np
+import copy
 
 from rclpy.node import Node
 from rclpy.time import Duration
@@ -29,7 +30,7 @@ class MovingTargetGenerator(Node):
 
         # Buffers
         self.tf_buffer = tf2_ros.Buffer()
-        self.goal_buffer = deque(maxlen=5)
+        self.goal_buffer = deque(maxlen=30)
 
         # Data subscribers
         ## Create a TransformListener
@@ -62,11 +63,9 @@ class MovingTargetGenerator(Node):
             return
 
         if len(result.boxes) > 1:
-            self.get_logger().warn("More than one person detected.")
-            self.get_logger().warn(
-                "Currently multiple person detection is unsupported."
-            )
-            self.get_logger().warn("Choosing first occurence for processing.")
+            self.get_logger().warn("More than one person detected.\n"+
+                                   "Currently multiple person detection is unsupported.\n" +
+                                   "Choosing first occurence for processing.")
 
         bbox = result.boxes[0].xyxyn
         bbox_left = bbox[0]
@@ -76,20 +75,20 @@ class MovingTargetGenerator(Node):
         focal_len_x = camera_info.k[0]
 
         # Calculate the angles to the left and right edges of the bounding box
-        angle_left = math.atan((bbox_left * img_width - frame_center) / focal_len_x)
-        angle_right = math.atan((bbox_right * img_width - frame_center) / focal_len_x)
+        angle_left = -math.atan((bbox_left * img_width - frame_center) / focal_len_x)
+        angle_right = -math.atan((bbox_right * img_width - frame_center) / focal_len_x)
 
         # Get the indices of the LiDAR rays that fall within these angles
-        ray_index_left = round((scan.angle_min + angle_left) / scan.angle_increment)
-        ray_index_right = round((scan.angle_min + angle_right) / scan.angle_increment)
+        ray_index_start = round((angle_right - scan.angle_min) / scan.angle_increment)
+        ray_index_stop = round((angle_left - scan.angle_min) / scan.angle_increment)
 
         # Group the distances of these rays by distance
         distance_groups = defaultdict(list)
-        for i in range(ray_index_left, ray_index_right + 1):
+        for i in range(ray_index_start, ray_index_stop + 1):
             distance = scan.ranges[i]
             if distance == float("inf"): # Ignore distances greater laser range
                 continue
-
+            
             # Group distances that are close to each other (within 0.3m)
             group = round(distance / 0.3)
             distance_groups[group].append(distance)
@@ -159,7 +158,7 @@ class MovingTargetGenerator(Node):
         )
 
         # Create a PoseStamped message for the goal
-        goal_pose = robot_pose
+        goal_pose = copy.deepcopy(robot_pose)
         goal_pose.pose.position.x = goal_x
         goal_pose.pose.position.y = goal_y
 
