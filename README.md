@@ -36,8 +36,10 @@ python3 -m pip install \
 
 ## Makefile shortcuts
 
-* `make install_gazebo_res`       - build and install gazebo plugins and resources
+* `make install_gazebo_res`       - build gazebo plugins
+  * `source src/gazebo/install_gazebo_res.bash` - to install those resources 
 * `make control`                  - open hand-steering node for robot simulation
+* `make nodes`                    - start detector/goal update nodes
 * `make clean`                    - clean all built files
 
 ## Build
