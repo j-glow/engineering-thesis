@@ -123,7 +123,8 @@ class MovingTargetGenerator(Node):
             self.get_logger().info(
                 "Waiting for transform from base_footprint to map..."
             )
-        robot_pose: TransformStamped = self.tf_buffer.lookup_transform(
+            
+        robot_tf: TransformStamped = self.tf_buffer.lookup_transform(
             "map",
             "base_footprint",
             rclpy.time.Time(),
@@ -131,14 +132,12 @@ class MovingTargetGenerator(Node):
         )
 
         # Create a PoseStamped message for the robot's pose
-        robot_pose = PoseStamped()
         robot_quaternion = PyQuaternion(
-            w=robot_pose.pose.orientation.w,
-            x=robot_pose.pose.orientation.x,
-            y=robot_pose.pose.orientation.y,
-            z=robot_pose.pose.orientation.z,
+            w=robot_tf.transform.rotation.w,
+            x=robot_tf.transform.rotation.x,
+            y=robot_tf.transform.rotation.y,
+            z=robot_tf.transform.rotation.z,
         )
-
         robot_yaw, _, _ = robot_quaternion.yaw_pitch_roll
 
         # Calculate goal position relative to the robot
@@ -147,18 +146,18 @@ class MovingTargetGenerator(Node):
 
         # Transform to map coordinates
         goal_x = (
-            robot_pose.pose.position.x
+            robot_tf.transform.translation.x
             + goal_x_rel * math.cos(robot_yaw)
             - goal_y_rel * math.sin(robot_yaw)
         )
         goal_y = (
-            robot_pose.pose.position.y
+            robot_tf.transform.translation.y
             + goal_x_rel * math.sin(robot_yaw)
             + goal_y_rel * math.cos(robot_yaw)
         )
 
         # Create a PoseStamped message for the goal
-        goal_pose = copy.deepcopy(robot_pose)
+        goal_pose = PoseStamped()
         goal_pose.pose.position.x = goal_x
         goal_pose.pose.position.y = goal_y
 
