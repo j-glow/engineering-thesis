@@ -3,7 +3,6 @@ import math
 import message_filters
 import tf2_ros
 import numpy as np
-import copy
 
 from rclpy.node import Node
 from rclpy.time import Duration
@@ -13,7 +12,6 @@ from sensor_msgs.msg import LaserScan, Image, CameraInfo
 from interfaces.srv import Inference
 from geometry_msgs.msg import PoseStamped, TransformStamped, Quaternion
 from pyquaternion import Quaternion as PyQuaternion
-
 
 from collections import deque, defaultdict
 
@@ -30,7 +28,7 @@ class MovingTargetGenerator(Node):
 
         # Buffers
         self.tf_buffer = tf2_ros.Buffer()
-        self.goal_buffer = deque(maxlen=30)
+        self.goal_buffer = deque(maxlen=15)
 
         # Data subscribers
         ## Create a TransformListener
@@ -49,7 +47,7 @@ class MovingTargetGenerator(Node):
         self.ats.registerCallback(self._process_data_cb)
 
         # Publishers
-        self.goal_update = self.create_publisher(PoseStamped, "goal_update", 5)
+        self.goal_update = self.create_publisher(PoseStamped, "goal_pose", 5)
 
         while not self.detector_client.wait_for_service(timeout_sec=2.0):
             self.get_logger().info("Detector not initialized, waiting...")
@@ -104,7 +102,8 @@ class MovingTargetGenerator(Node):
         distances_to_bbox = smallest_distance_group[1]
 
         # Set distance_to_goal as the mean distance of the smallest distance group
-        distance_to_goal = np.mean(distances_to_bbox)
+        # Subtract 1m to not drive too close to the person
+        distance_to_goal = np.mean(distances_to_bbox) - 1
 
         # Calculate the center angle of the bounding box
         angle_to_goal = (angle_left + angle_right) / 2
