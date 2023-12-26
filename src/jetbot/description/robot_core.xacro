@@ -134,7 +134,7 @@
     <joint name="caster_front_joint" type="fixed">
         <parent link="chassis" />
         <child link="caster_wheel_front" />
-        <origin xyz="${caster_wheel_offset_x} 0 ${caster_wheel_offset_z}" />
+        <origin xyz="${caster_wheel_offset_x} 0 ${caster_wheel_offset_z+0.001}" />
     </joint>
 
 
@@ -165,7 +165,7 @@
     <joint name="caster_back_joint" type="fixed">
         <parent link="chassis" />
         <child link="caster_wheel_back" />
-        <origin xyz="${-caster_wheel_offset_x} 0 ${caster_wheel_offset_z}" />
+        <origin xyz="${-caster_wheel_offset_x} 0 ${caster_wheel_offset_z+0.001}" />
     </joint>
 
 
