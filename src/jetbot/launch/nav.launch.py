@@ -147,7 +147,7 @@ def generate_launch_description():
                 output='screen',
                 respawn=use_respawn,
                 respawn_delay=2.0,
-                parameters=[configured_params],
+                parameters=[configured_params, {'default_bt_xml_filename': os.path.join(bringup_dir, 'config', 'follow_person.xml')}],
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings),
             Node(
