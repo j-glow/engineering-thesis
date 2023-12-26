@@ -11,7 +11,6 @@ find_package(sensor_msgs REQUIRED)
 
 set(msg_files
   "msg/DetectionBox.msg"
-  "msg/GoalFrame.msg"
 )
 
 set(srv_files
