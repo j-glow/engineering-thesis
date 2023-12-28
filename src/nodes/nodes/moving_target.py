@@ -28,7 +28,7 @@ class MovingTargetGenerator(Node):
 
         # Buffers
         self.tf_buffer = tf2_ros.Buffer()
-        self.goal_buffer = deque(maxlen=15)
+        self.goal_buffer = deque(maxlen=7)
 
         # Data subscribers
         ## Create a TransformListener
@@ -103,7 +103,7 @@ class MovingTargetGenerator(Node):
 
         # Set distance_to_goal as the mean distance of the smallest distance group
         # Subtract 1m to not drive too close to the person
-        distance_to_goal = np.mean(distances_to_bbox) - 1
+        distance_to_goal = np.mean(distances_to_bbox) - 0.5
 
         # Calculate the center angle of the bounding box
         angle_to_goal = (angle_left + angle_right) / 2
@@ -168,18 +168,22 @@ class MovingTargetGenerator(Node):
             orientation_angle = math.atan2(
                 newest_goal[1] - oldest_goal[1], newest_goal[0] - oldest_goal[0]
             )
+            
+        else:
+            # If buffer was cleared, set orientation as robot's yaw plus angle to goal
+            orientation_angle = robot_yaw + angle_to_goal
 
-            # Create a quaternion using pyquaternion
-            py_quat = PyQuaternion(axis=[0.0, 0.0, 1.0], angle=orientation_angle)
+        # Create a quaternion using pyquaternion
+        py_quat = PyQuaternion(axis=[0.0, 0.0, 1.0], angle=orientation_angle)
 
-            # Convert to a geometry_msgs.msg.Quaternion
-            goal_pose.pose.orientation = Quaternion(
-                x=py_quat.x,
-                y=py_quat.y,
-                z=py_quat.z,
-                w=py_quat.w,
-            )
-
+        # Convert to a geometry_msgs.msg.Quaternion
+        goal_pose.pose.orientation = Quaternion(
+            x=py_quat.x,
+            y=py_quat.y,
+            z=py_quat.z,
+            w=py_quat.w,
+        )
+        
         goal_pose.header.stamp = rclpy.time.Time().to_msg()
         goal_pose.header.frame_id = "map"
 
