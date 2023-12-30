@@ -27,6 +27,7 @@ setup(
         "console_scripts": [
             "detector = nodes.detector:main",
             "moving_target = nodes.moving_target:main",
+            "dummy_nav = nodes.dummy_nav:main"
         ],
     },
 )
