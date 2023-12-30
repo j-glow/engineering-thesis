@@ -1,31 +1,34 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
-from ultralytics import YOLO
+from ultralytics import YOLO  # Ensure this import is correct
 import cv2
-
-from ament_index_python.packages import get_package_share_directory
-import os
-
-
-# Person in COCO dataset is class_id==0
+import torch
 
 def main():
-    pkg_path = get_package_share_directory("nodes")
-    print(pkg_path)
-    model = YOLO(os.path.join(pkg_path, "models", "yolov8n.pt"))
-    frame = cv2.imread('resources/people_street.jpeg')
-    result = model(frame)
+    # Specify the device
+    print(torch.cuda.is_available())
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    frame_res = frame.copy()
+    for x in ["n", "s", "m", "l", "x"]:
+        # Load the model onto the specified device
+        print("Size: {}".format(x))
 
-    for r in result:
-        frame_res = r.plot()
+        model = YOLO("yolov8{}.engine".format(x)).to(device)
+        frame = cv2.imread('resources/people_street.jpeg')
+        frame = cv2.resize(frame, (640, 640))
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame = frame / 255.0  # Normalize to 0-1
+        frame = torch.from_numpy(frame).to(device).permute(2, 0, 1)
 
-    print(result[0].boxes.xyxyn.numpy())
-    print(result[0].speed.values())
-    print(sum(list(result[0].speed.values())))
+        # If necessary, normalize the frame here (depending on the model requirements)
 
-    cv2.imshow("results",frame_res)
+        # Run inference
+        result = model.predict(frame.unsqueeze(0), half=True)  # Add a batch dimension
+
+        cv2.waitKey(1000)
+        cv2.destroyAllWindows()
+        print("\n\n")
+        model.export(format='tensorrt')
 
     cv2.waitKey(1000)
     cv2.destroyAllWindows()
