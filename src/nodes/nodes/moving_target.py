@@ -161,7 +161,7 @@ class MovingTargetGenerator(Node):
         goal_pose.pose.position.y = goal_y
 
         self.goal_buffer.append([goal_x, goal_y])
-        if len(self.goal_buffer) > 1:
+        if len(self.goal_buffer) == self.goal_buffer.maxlen:
             # Calculate the orientation angle between the oldest and newest goal position
             oldest_goal = self.goal_buffer[0]
             newest_goal = self.goal_buffer[-1]
@@ -170,7 +170,7 @@ class MovingTargetGenerator(Node):
             )
             
         else:
-            # If buffer was cleared, set orientation as robot's yaw plus angle to goal
+            # If buffer is not full, set orientation as robot's yaw plus angle to goal
             orientation_angle = robot_yaw + angle_to_goal
 
         # Create a quaternion using pyquaternion
